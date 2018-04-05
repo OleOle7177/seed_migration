@@ -36,6 +36,8 @@ module SeedMigration
         migration.version = version
         migration.runtime = runtime.to_i
         migration.migrated_on = DateTime.now
+        migration.hostname = hostname
+        migration.git_head = git_head
         begin
           migration.save!
         rescue StandardError => e
@@ -160,6 +162,20 @@ module SeedMigration
     def announce(text)
       length = [0, 75 - text.length].max
       SeedMigration::Migrator.logger.info "== %s %s" % [text, "=" * length]
+    end
+
+    def hostname
+      `hostname`.strip
+    rescue => e
+      SeedMigration::Migrator.logger.warn "Can't get hostname, "\
+        "OS says: #{e.message}"
+    end
+
+    def git_head
+      `git rev-parse HEAD`.strip
+    rescue => e
+      SeedMigration::Migrator.logger.warn "Can't get git head commit, "\
+        "OS says: #{e.message}"
     end
 
     def self.get_new_migrations

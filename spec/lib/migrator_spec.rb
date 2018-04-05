@@ -29,6 +29,18 @@ describe SeedMigration::Migrator do
       expect { migrator.up }.to change { SeedMigration::DataMigration.count }.by(1)
       SeedMigration::DataMigration.order("version DESC").reload.first.destroy
     end
+
+    it "should call git head" do
+      require test_migration_path
+      expect(SeedMigration::Migrator).to receive(:`).with("")
+      migrator.up
+    end
+
+    it "should call hostname" do
+      require test_migration_path
+      expect(SeedMigration::Migrator).to receive(:`).with("")
+      migrator.up
+    end
   end
 
   describe "#down" do
